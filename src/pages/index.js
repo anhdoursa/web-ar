@@ -1,20 +1,45 @@
-import { Box, Stack } from "@mui/material";
+import { Box } from "@mui/material";
 import Head from "next/head";
 import { useEffect, useRef, useState } from "react";
 export default function Home() {
   const [totalButton, setTotalButton] = useState(16);
   const [col, setCol] = useState(4);
-  const [totalBoom, setTotalBoom] = useState(10)
-  const initBoxGameWidth = 750
-  const boxGame = useRef()
-  
+  const [totalBoom, setTotalBoom] = useState(3);
+  const listBoomIndex = [];
+
+  const initBoxGameWidth = 750;
+  const boxGame = useRef();
   useEffect(() => {
-    boxGame.current.style.height = boxGame.current.clientWidth + 'px';
+    function getNumberRandom() {
+      if (listBoomIndex.length >= totalBoom) return
+      const number = Math.floor(Math.random() * totalButton);
+      if (!listBoomIndex.includes(number)) {
+        listBoomIndex.push(number);
+        return;
+      } else {
+        getNumberRandom();
+      }
+    }
+
+    for (let i = 0; i < totalBoom; i++) {
+      getNumberRandom();
+      console.log(i, listBoomIndex);
+    }
+  }, [listBoomIndex, totalBoom, totalButton]);
+
+  useEffect(() => {
+    boxGame.current.style.height = boxGame.current.clientWidth + "px";
   }, []);
 
-  const handleButtonClick = (button) => {
-    console.log('buttonClick', button);
-  }
+  const handleButtonClick = (event,index) => {
+
+    if (listBoomIndex.includes(index)) {
+      event.target.style.opacity = 0.5;
+    } else {
+      event.target.style.opacity = 0;
+    }
+  };
+
   return (
     <>
       <Head>
@@ -60,7 +85,7 @@ export default function Home() {
                   background: "url(images/button.png) center no-repeat",
                   backgroundSize: "contain",
                 }}
-                onClick={handleButtonClick}
+                onClick={(e) => handleButtonClick(e,index)}
               ></Box>
             ))}
           </Box>
