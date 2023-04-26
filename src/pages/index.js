@@ -1,17 +1,22 @@
-import { Box } from "@mui/material";
+import { Box, Button, IconButton, Tooltip } from "@mui/material";
 import Head from "next/head";
 import { useEffect, useRef, useState } from "react";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 export default function Home() {
   const [totalButton, setTotalButton] = useState(16);
   const [col, setCol] = useState(4);
   const [totalBoom, setTotalBoom] = useState(3);
+  const [gameOver, setGameOver] = useState(false);
+  const [userMoney, setUserMoney] = useState(1000);
+  const [buttonStart, setButtonStart] = useState(true);
   const listBoomIndex = [];
-
-  const initBoxGameWidth = 750;
+  const boomVideo = useRef();
+  const initBoxGameWidth = 650;
   const boxGame = useRef();
   useEffect(() => {
     function getNumberRandom() {
-      if (listBoomIndex.length >= totalBoom) return
+      if (listBoomIndex.length >= totalBoom) return;
       const number = Math.floor(Math.random() * totalButton);
       if (!listBoomIndex.includes(number)) {
         listBoomIndex.push(number);
@@ -22,8 +27,8 @@ export default function Home() {
     }
 
     for (let i = 0; i < totalBoom; i++) {
+      if (listBoomIndex.length >= totalBoom) break;
       getNumberRandom();
-      console.log(i, listBoomIndex);
     }
   }, [listBoomIndex, totalBoom, totalButton]);
 
@@ -31,13 +36,21 @@ export default function Home() {
     boxGame.current.style.height = boxGame.current.clientWidth + "px";
   }, []);
 
-  const handleButtonClick = (event,index) => {
-
+  const handleButtonClick = (event, index) => {
     if (listBoomIndex.includes(index)) {
-      event.target.style.opacity = 0.5;
+      boomVideo.current.play();
+      boomVideo.current.style.opacity = 1;
+      setGameOver(true);
     } else {
-      event.target.style.opacity = 0;
+      event.target.parentElement.removeChild(event.target);
     }
+  };
+
+  const handleRestartGame = () => {
+    setGameOver(false);
+    setUserMoney((prev) => prev - 10);
+    boomVideo.current.load();
+    boomVideo.current.style.opacity = 0;
   };
 
   return (
@@ -56,38 +69,150 @@ export default function Home() {
           display: "flex",
         }}
       >
-        <Box
-          ref={boxGame}
-          sx={{
-            width: initBoxGameWidth,
-            maxWidth: "100%",
-            background: "url(images/background.webp)",
-            backgroundSize: "cover",
-            p: 2,
-          }}
-        >
+        <Box sx={{ textAlign: "right" }}>
+          <Button
+            variant="outlined"
+            sx={{ marginBottom: "30px", fontWeight: 700 }}
+            startIcon={<AttachMoneyIcon />}
+          >
+            {userMoney}
+          </Button>
           <Box
+            ref={boxGame}
             sx={{
-              background: "#bababa",
-              width: "100%",
-              height: "100%",
-              display: "grid",
-              gridTemplateColumns: `repeat(${col}, 1fr)`,
-              gap: "1%",
-              padding: "15px",
-              cursor: "pointer",
+              width: initBoxGameWidth,
+              maxWidth: "100%",
+              background: "url(images/background.webp)",
+              backgroundSize: "cover",
+              p: 2,
+              position: "relative",
             }}
           >
-            {Array.from(Array(totalButton).keys()).map((item, index) => (
+            <video
+              ref={boomVideo}
+              width="100%"
+              height="100%"
+              preload
+              playsinline
+              style={{
+                objectFit: "cover",
+                position: "absolute",
+                left: 0,
+                top: 0,
+                right: 0,
+                bottom: 0,
+                opacity: 0,
+                pointerEvents: "none",
+              }}
+            >
+              <source src="videos/boom_video.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+
+            {gameOver && (
+              <Tooltip title="Restart Game" placement="top">
+                <IconButton
+                  sx={{
+                    position: "absolute",
+                    right: "20px",
+                    bottom: "20px",
+                    cursor: "pointer",
+                    zIndex: "3",
+                  }}
+                  onClick={handleRestartGame}
+                >
+                  <RestartAltIcon
+                    sx={{
+                      color: "#fff",
+                      fontSize: "60px",
+                    }}
+                  />
+                </IconButton>
+              </Tooltip>
+            )}
+
+            {gameOver && (
               <Box
-                key={index}
                 sx={{
-                  background: "url(images/button.png) center no-repeat",
-                  backgroundSize: "contain",
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "60px",
+                  color: "#fff",
                 }}
-                onClick={(e) => handleButtonClick(e,index)}
-              ></Box>
-            ))}
+              >
+                <span>Game Over</span>
+              </Box>
+            )}
+
+            {buttonStart && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "#000",
+                }}
+              >
+                <Button
+                  variant="contained"
+                  size="medium"
+                  onClick={() => {
+                    setButtonStart(false);
+                    setUserMoney((prev) => prev - 10);
+                  }}
+                >
+                  Start Game
+                </Button>
+              </Box>
+            )}
+
+            {!gameOver && !buttonStart && (
+              <Box
+                sx={{
+                  background: "#bababa",
+                  width: "100%",
+                  height: "100%",
+                  display: "grid",
+                  gridTemplateColumns: `repeat(${col}, 1fr)`,
+                  gap: "1%",
+                  padding: "15px",
+                }}
+              >
+                {Array.from(Array(totalButton).keys()).map((item, index) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        maxWidth: "125px",
+                        width: "100%",
+                        height: "100%",
+                        background: "url(images/button.png) center no-repeat",
+                        backgroundSize: "contain",
+                        cursor: "pointer",
+                      }}
+                      onClick={(e) => handleButtonClick(e, index)}
+                    ></Box>
+                  </Box>
+                ))}
+              </Box>
+            )}
           </Box>
         </Box>
       </Box>
