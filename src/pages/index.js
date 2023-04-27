@@ -153,11 +153,7 @@ export default function Home() {
                 </DialogContentText>
               </DialogContent>
             </Dialog>
-            <Button
-              variant="contained"
-              sx={{ fontWeight: 700, fontSize: "20px" }}
-              startIcon={<AttachMoneyIcon size="2em" />}
-            >
+            <Button variant="contained" size="large" startIcon={<AttachMoneyIcon />}>
               {userMoney}
             </Button>
           </Stack>
@@ -307,7 +303,7 @@ export default function Home() {
             >
               <DialogContent>
                 <DialogTitle>{"Please recharge money to start."}</DialogTitle>
-                
+
                 <DialogActions>
                   <Button>Click here to add money</Button>
                 </DialogActions>
