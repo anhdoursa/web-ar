@@ -1,19 +1,39 @@
-import { Box, Button, IconButton, Tooltip } from "@mui/material";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  IconButton,
+  Stack,
+  Tooltip,
+} from "@mui/material";
 import Head from "next/head";
 import { useEffect, useRef, useState } from "react";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 export default function Home() {
+  const FEE = 100;
+  const REWARD = FEE * 3;
+  const WIN_CLICK = 3;
   const [totalButton, setTotalButton] = useState(16);
   const [col, setCol] = useState(4);
-  const [totalBoom, setTotalBoom] = useState(3);
+  const [totalBoom, setTotalBoom] = useState(4);
   const [gameOver, setGameOver] = useState(false);
+  const [gameWin, setGameWin] = useState(false);
   const [userMoney, setUserMoney] = useState(1000);
+  const [userClicked, setUserClicked] = useState(0);
   const [buttonStart, setButtonStart] = useState(true);
+  const [openDialogGameRules, setOpenDialogGameRules] = useState(false);
+  const [openDialogAddMoney, setOpenDialogAddMoney] = useState(false);
   const listBoomIndex = [];
   const boomVideo = useRef();
+  const winVideo = useRef();
   const initBoxGameWidth = 650;
   const boxGame = useRef();
+
   useEffect(() => {
     function getNumberRandom() {
       if (listBoomIndex.length >= totalBoom) return;
@@ -41,16 +61,52 @@ export default function Home() {
       boomVideo.current.play();
       boomVideo.current.style.opacity = 1;
       setGameOver(true);
+      setUserClicked(0);
     } else {
+      setUserClicked((prev) => prev + 1);
       event.target.parentElement.removeChild(event.target);
     }
   };
 
+  useEffect(() => {
+    if (userClicked === WIN_CLICK) {
+      setUserMoney((prev) => prev + REWARD);
+      setGameWin(true);
+      winVideo.current.play();
+      winVideo.current.style.opacity = 1;
+    }
+  }, [userClicked]);
+
+  const handelStartGame = () => {
+    if (userMoney < FEE) {
+      setOpenDialogAddMoney(true);
+    } else {
+      setButtonStart(false);
+      setUserMoney((prev) => {
+        let newMoney = prev - FEE;
+        if (newMoney <= 0) newMoney = 0;
+        return newMoney;
+      });
+    }
+  };
+
   const handleRestartGame = () => {
-    setGameOver(false);
-    setUserMoney((prev) => prev - 10);
-    boomVideo.current.load();
-    boomVideo.current.style.opacity = 0;
+    if (userMoney < FEE) {
+      setOpenDialogAddMoney(true);
+    } else {
+      setGameOver(false);
+      setGameWin(false);
+      setUserClicked(0);
+      setUserMoney((prev) => {
+        let newMoney = prev - FEE;
+        if (newMoney <= 0) newMoney = 0;
+        return newMoney;
+      });
+      boomVideo.current.load();
+      boomVideo.current.style.opacity = 0;
+      winVideo.current.load();
+      winVideo.current.style.opacity = 0;
+    }
   };
 
   return (
@@ -64,19 +120,47 @@ export default function Home() {
         component="main"
         sx={{
           height: "100vh",
+          width: "100vw",
           alignItems: "center",
           justifyContent: "center",
           display: "flex",
         }}
       >
-        <Box sx={{ textAlign: "right" }}>
-          <Button
-            variant="outlined"
-            sx={{ marginBottom: "30px", fontWeight: 700 }}
-            startIcon={<AttachMoneyIcon />}
+        <Box sx={{ maxWidth: "100%", padding: "15px" }}>
+          <Stack
+            flexDirection="row"
+            gap={1}
+            justifyContent="flex-end"
+            sx={{ marginBottom: "10px" }}
           >
-            {userMoney}
-          </Button>
+            <Button
+              variant="outlined"
+              onClick={() => setOpenDialogGameRules(true)}
+            >
+              Game rules
+            </Button>
+            <Dialog
+              open={openDialogGameRules}
+              onClose={() => setOpenDialogGameRules(false)}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogTitle id="alert-dialog-title">{"Game rules"}</DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  {`Each play turn will cost ${FEE}$. There total is ${totalButton} buttons which ${totalBoom} buttons are boom. If you press ${WIN_CLICK} buttons without
+                  hitting the boom then you win and get ${REWARD}$ else you lose`}
+                </DialogContentText>
+              </DialogContent>
+            </Dialog>
+            <Button
+              variant="contained"
+              sx={{ fontWeight: 700, fontSize: "20px" }}
+              startIcon={<AttachMoneyIcon size="2em" />}
+            >
+              {userMoney}
+            </Button>
+          </Stack>
           <Box
             ref={boxGame}
             sx={{
@@ -92,8 +176,8 @@ export default function Home() {
               ref={boomVideo}
               width="100%"
               height="100%"
-              preload
-              playsinline
+              preload="true"
+              playsInline
               style={{
                 objectFit: "cover",
                 position: "absolute",
@@ -109,7 +193,28 @@ export default function Home() {
               Your browser does not support the video tag.
             </video>
 
-            {gameOver && (
+            <video
+              ref={winVideo}
+              width="100%"
+              height="100%"
+              preload="true"
+              playsInline
+              style={{
+                objectFit: "cover",
+                position: "absolute",
+                left: 0,
+                top: 0,
+                right: 0,
+                bottom: 0,
+                opacity: 0,
+                pointerEvents: "none",
+              }}
+            >
+              <source src="videos/win_video.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+
+            {(gameOver || gameWin) && (
               <Tooltip title="Restart Game" placement="top">
                 <IconButton
                   sx={{
@@ -118,6 +223,7 @@ export default function Home() {
                     bottom: "20px",
                     cursor: "pointer",
                     zIndex: "3",
+                    background: "#000",
                   }}
                   onClick={handleRestartGame}
                 >
@@ -150,6 +256,25 @@ export default function Home() {
               </Box>
             )}
 
+            {gameWin && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "60px",
+                  color: "#fff",
+                }}
+              >
+                <span>{`You Win + ${REWARD}$`}</span>
+              </Box>
+            )}
+
             {buttonStart && (
               <Box
                 sx={{
@@ -167,17 +292,29 @@ export default function Home() {
                 <Button
                   variant="contained"
                   size="medium"
-                  onClick={() => {
-                    setButtonStart(false);
-                    setUserMoney((prev) => prev - 10);
-                  }}
+                  onClick={handelStartGame}
                 >
                   Start Game
                 </Button>
               </Box>
             )}
 
-            {!gameOver && !buttonStart && (
+            <Dialog
+              open={openDialogAddMoney}
+              onClose={() => setOpenDialogAddMoney(false)}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogContent>
+                <DialogTitle>{"Please recharge money to start."}</DialogTitle>
+                
+                <DialogActions>
+                  <Button>Click here to add money</Button>
+                </DialogActions>
+              </DialogContent>
+            </Dialog>
+
+            {!gameWin && !gameOver && !buttonStart && (
               <Box
                 sx={{
                   background: "#bababa",
