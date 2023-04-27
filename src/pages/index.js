@@ -286,7 +286,7 @@ export default function Home() {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  background: "#000",
+                  background: "#7eceff",
                 }}
               >
                 <Button
