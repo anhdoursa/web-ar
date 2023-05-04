@@ -1,20 +1,28 @@
+import { Html, Text } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Interactive, useHitTest } from '@react-three/xr';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
+
+let hitTestSource = null;
+let hitTestSourceRequested = false;
+let reticle;
+
 const Scene = () => {
   const [hitTest, setHitTest] = useState(false);
-  let hitTestSource = null;
-  let hitTestSourceRequested = false;
-  const mesh = useRef();
+  const [text, setText] = useState('default');
+  const object3D = useRef();
   const { scene } = useThree();
-  const reticle = new THREE.Mesh(
-    new THREE.RingGeometry(0.15, 0.2, 32).rotateX(-Math.PI / 2),
-    new THREE.MeshBasicMaterial()
-  );
-  reticle.matrixAutoUpdate = false;
-  reticle.visible = false;
-  scene.add(reticle);
+
+  useMemo(() => {
+    reticle = new THREE.Mesh(
+      new THREE.RingGeometry(0.15, 0.2, 32).rotateX(-Math.PI / 2),
+      new THREE.MeshBasicMaterial()
+    );
+    reticle.matrixAutoUpdate = false;
+    reticle.visible = false;
+    scene.add(reticle);
+  }, []);
 
   useFrame((state, delta, xrFrame) => {
     if (xrFrame) {
@@ -51,17 +59,20 @@ const Scene = () => {
 
   useEffect(() => {
     if (hitTest) {
-      console.log('here is hitTest');
-      mesh.current.position.setFromMatrixPosition(reticle.matrix);
-      mesh.current.visible = true;
+      object3D.current.position.setFromMatrixPosition(reticle.matrix);
+      object3D.current.visible = true;
     }
   }, [hitTest]);
 
+  const onSelect = () => {
+    setText('select');
+  };
+
   return (
-    <Interactive>
-      <mesh ref={mesh} visible={false}>
-        <cylinderGeometry args={[0.1, 0.1, 0.2, 32]} />
-        <meshBasicMaterial />
+    <Interactive onSelect={onSelect}>
+      <mesh ref={object3D} visible={false}>
+        <boxGeometry />
+        <meshBasicMaterial color="red" />
       </mesh>
     </Interactive>
   );

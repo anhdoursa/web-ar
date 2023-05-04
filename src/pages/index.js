@@ -5,13 +5,14 @@ import { ARButton, Controllers, XR } from '@react-three/xr';
 export default function Home() {
   return (
     <>
-      <ARButton />
+      <ARButton sessionInit={{ requiredFeatures: ['hit-test'] }} />
+      <p>Text</p>
       <Canvas
         camera={{
           fov: 70,
           near: 0.01,
-          far: 20,
-          position: [0, 0, 0],
+          far: 200,
+          // position: [0, 0, 0],
         }}
       >
         <XR referenceSpace="local">
