@@ -66,10 +66,10 @@ const Scene = ({ setText }) => {
 
   return (
     <Interactive
-      onHover={() => setText('onHover')}
-      onBlur={() => setText('onHover')}
-      // onSelectStart={() => setText('onSelectStart')}
-      // onSelectEnd={() => setText('onSelectEnd')}
+      // onHover={() => setText('onHover')}
+      // onBlur={() => setText('onHover')}
+      onSelectStart={() => setText('onSelectStart')}
+      onSelectEnd={() => setText('onSelectEnd')}
       // onSqueeze={() => setText('onSqueeze')}
     >
       <mesh ref={object3D} visible={false}>
