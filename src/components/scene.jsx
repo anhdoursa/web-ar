@@ -10,7 +10,7 @@ let reticle;
 
 const Scene = ({ setText }) => {
   const [hitTest, setHitTest] = useState(false);
-
+  const [hover, setHover] = useState(false);
   const object3D = useRef();
   const { scene } = useThree();
 
@@ -66,15 +66,15 @@ const Scene = ({ setText }) => {
 
   return (
     <Interactive
-      // onHover={() => setText('onHover')}
+      onHover={() => setHover(true)}
       // onBlur={() => setText('onHover')}
-      onSelectStart={() => setText('onSelectStart')}
-      onSelectEnd={() => setText('onSelectEnd')}
+      // onSelectStart={() => setText('onSelectStart')}
+      onSelectEnd={() => setHover(false)}
       // onSqueeze={() => setText('onSqueeze')}
     >
       <mesh ref={object3D} visible={false}>
         <boxGeometry args={[0.5, 0.5, 0.5]} />
-        <meshBasicMaterial color="red" />
+        <meshBasicMaterial color={hover ? 'yellow' : 'red'} />
       </mesh>
     </Interactive>
   );
