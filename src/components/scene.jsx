@@ -66,8 +66,8 @@ const Scene = ({ setText }) => {
 
   return (
     <Interactive
-      onHover={() => setText('onHover')}
-      onBlur={() => setText('onHover')}
+      // onHover={() => setText('onHover')}
+      // onBlur={() => setText('onHover')}
       onSelectStart={() => setText('onSelectStart')}
       onSelectEnd={() => setText('onSelectEnd')}
       onSqueeze={() => setText('onSqueeze')}
