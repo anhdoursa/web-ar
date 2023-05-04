@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <>
       <ARButton />
-      <p>Text</p>
+      <p style={{ color: '#fff', fontSize: '2em', position: 'absolute', top: '50%', left: '50%' }}>Text</p>
       <Canvas
         camera={{
           fov: 70,
