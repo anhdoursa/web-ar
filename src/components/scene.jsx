@@ -1,8 +1,9 @@
 import { useFrame, useThree } from '@react-three/fiber';
-import { Interactive } from '@react-three/xr';
-import React, { useRef } from 'react';
+import { Interactive, useHitTest } from '@react-three/xr';
+import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 const Scene = () => {
+  const [hitTest, setHitTest] = useState(false);
   let hitTestSource = null;
   let hitTestSourceRequested = false;
   const mesh = useRef();
@@ -40,34 +41,28 @@ const Scene = () => {
           const hit = hitTestResults[0];
           reticle.visible = true;
           reticle.matrix.fromArray(hit.getPose(referenceSpace).transform.matrix);
+          setHitTest(true);
         } else {
           reticle.visible = false;
         }
       }
     }
   });
-  // useHitTest((hitMatrix, hit) => {
-  //   if (hit) {
-  //     reticle.current.visible = true;
-  //   } else {
-  //     reticle.current.visible = false;
-  //   }
-  //   // use hitMatrix to position any object on the real life surface
-  //   hitMatrix.decompose(reticle.current.position, reticle.current.quaternion, reticle.current.scale);
 
-  //   // console.log(hit);
-  // });
+  useEffect(() => {
+    if (hitTest) {
+      console.log('here is hitTest');
+      mesh.current.position.setFromMatrixPosition(reticle.matrix);
+      mesh.current.visible = true;
+    }
+  }, [hitTest]);
 
   return (
     <Interactive>
-      {/* <mesh ref={mesh}>
-        <boxGeometry />
-        <meshNormalMaterial />
-      </mesh> */}
-      {/* <mesh ref={reticle} visible={false} matrixAutoUpdate={false}>
-        <ringGeometry args={[0.15, 0.2, 32]} rotation={[-Math.PI / 2, 0, 0]} />
+      <mesh ref={mesh} visible={false}>
+        <cylinderGeometry args={[0.1, 0.1, 0.2, 32]} />
         <meshBasicMaterial />
-      </mesh> */}
+      </mesh>
     </Interactive>
   );
 };
