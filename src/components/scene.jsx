@@ -12,7 +12,6 @@ const Scene = () => {
     if (xrFrame) {
       const referenceSpace = state.gl.xr.getReferenceSpace();
       const session = state.gl.xr.getSession();
-
       if (hitTestSourceRequested === false) {
         session.requestReferenceSpace('viewer').then(function (referenceSpace) {
           session.requestHitTestSource({ space: referenceSpace }).then(function (source) {
@@ -56,10 +55,10 @@ const Scene = () => {
 
   return (
     <Interactive>
-      <mesh ref={mesh}>
+      {/* <mesh ref={mesh}>
         <boxGeometry />
         <meshNormalMaterial />
-      </mesh>
+      </mesh> */}
       <mesh ref={reticle} visible={false} matrixAutoUpdate={false} rotateX={-Math.PI / 2}>
         <ringGeometry args={[0.15, 0.2, 32]} />
         <meshBasicMaterial />

@@ -6,7 +6,14 @@ export default function Home() {
   return (
     <>
       <ARButton />
-      <Canvas>
+      <Canvas
+        camera={{
+          fov: 70,
+          near: 0.01,
+          far: 20,
+          position: [0, 0, 0],
+        }}
+      >
         <XR referenceSpace="local">
           <Scene />
           <Controllers />
