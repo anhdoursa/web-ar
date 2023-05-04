@@ -8,13 +8,11 @@ let hitTestSource = null;
 let hitTestSourceRequested = false;
 let reticle;
 
-const Scene = () => {
+const Scene = ({ setText }) => {
   const [hitTest, setHitTest] = useState(false);
-  const [text, setText] = useState('default');
+
   const object3D = useRef();
   const { scene } = useThree();
-
-  const [color, setColor] = useState('red');
 
   useMemo(() => {
     reticle = new THREE.Mesh(
@@ -66,20 +64,14 @@ const Scene = () => {
     }
   }, [hitTest]);
 
-  const onSelectStart = () => {
-    setColor('yellow');
-  };
-
-  const onSelectEnd = () => {
-    setColor('red');
-  };
-
-  const onSqueeze = () => {
-    setColor('green');
-  };
-
   return (
-    <Interactive onSelectStart={onSelectStart} onSelectEnd={onSelectEnd} onSqueeze={onSqueeze}>
+    <Interactive
+      onHover={() => setText('onHover')}
+      onBlur={() => setText('onHover')}
+      onSelectStart={() => setText('onSelectStart')}
+      onSelectEnd={() => setText('onSelectEnd')}
+      onSqueeze={() => setText('onSqueeze')}
+    >
       <mesh ref={object3D} visible={false}>
         <boxGeometry args={[0.5, 0.5, 0.5]} />
         <meshBasicMaterial color={color} />

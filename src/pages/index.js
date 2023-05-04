@@ -1,12 +1,14 @@
 import Scene from '@/components/scene';
 import { Canvas } from '@react-three/fiber';
 import { ARButton, Controllers, XR } from '@react-three/xr';
+import { useState } from 'react';
 
 export default function Home() {
+  const [text, setText] = useState('text');
   return (
     <>
       <ARButton />
-      <p style={{ color: '#fff', fontSize: '2em', position: 'absolute', top: '50%', left: '50%' }}>Text</p>
+      <p style={{ color: '#fff', fontSize: '2em', position: 'absolute', top: '10%', left: '45%' }}>{text}</p>
       <Canvas
         camera={{
           fov: 70,
@@ -16,7 +18,7 @@ export default function Home() {
         }}
       >
         <XR referenceSpace="local">
-          <Scene />
+          <Scene setText={setText} />
           <Controllers />
         </XR>
         <ambientLight />
