@@ -30,13 +30,14 @@ const Scene = () => {
 
       if (hitTestSource) {
         const hitTestResults = xrFrame.getHitTestResults(hitTestSource);
-        console.log(hitTestResults);
         if (hitTestResults.length) {
           const hit = hitTestResults[0];
           reticle.current.visible = true;
           reticle.current.matrix.fromArray(hit.getPose(referenceSpace).transform.matrix);
+          console.log(reticle.current);
         } else {
           reticle.current.visible = false;
+          console.log('false');
         }
       }
     }
@@ -59,7 +60,7 @@ const Scene = () => {
         <boxGeometry />
         <meshNormalMaterial />
       </mesh>
-      <mesh ref={reticle} visible={false}>
+      <mesh ref={reticle} visible={false} matrixAutoUpdate={false}>
         <ringGeometry args={[0.15, 0.2, 32]} rotateX={-Math.PI / 2} />
         <meshBasicMaterial />
       </mesh>
