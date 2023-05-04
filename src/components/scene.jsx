@@ -1,12 +1,19 @@
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import { Interactive } from '@react-three/xr';
 import React, { useRef } from 'react';
-
+import * as THREE from 'three';
 const Scene = () => {
   let hitTestSource = null;
   let hitTestSourceRequested = false;
   const mesh = useRef();
-  const reticle = useRef();
+  const { scene } = useThree();
+  const reticle = new THREE.Mesh(
+    new THREE.RingGeometry(0.15, 0.2, 32).rotateX(-Math.PI / 2),
+    new THREE.MeshBasicMaterial()
+  );
+  reticle.matrixAutoUpdate = false;
+  reticle.visible = false;
+  scene.add(reticle);
 
   useFrame((state, delta, xrFrame) => {
     if (xrFrame) {
@@ -31,12 +38,10 @@ const Scene = () => {
         const hitTestResults = xrFrame.getHitTestResults(hitTestSource);
         if (hitTestResults.length) {
           const hit = hitTestResults[0];
-          reticle.current.visible = true;
-          reticle.current.matrix.fromArray(hit.getPose(referenceSpace).transform.matrix);
-          console.log(reticle.current);
+          reticle.visible = true;
+          reticle.matrix.fromArray(hit.getPose(referenceSpace).transform.matrix);
         } else {
-          reticle.current.visible = false;
-          console.log('false');
+          reticle.visible = false;
         }
       }
     }
@@ -59,10 +64,10 @@ const Scene = () => {
         <boxGeometry />
         <meshNormalMaterial />
       </mesh> */}
-      <mesh ref={reticle} visible={false} matrixAutoUpdate={false} rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[0.15, 0.2, 32]} />
+      {/* <mesh ref={reticle} visible={false} matrixAutoUpdate={false}>
+        <ringGeometry args={[0.15, 0.2, 32]} rotation={[-Math.PI / 2, 0, 0]} />
         <meshBasicMaterial />
-      </mesh>
+      </mesh> */}
     </Interactive>
   );
 };
