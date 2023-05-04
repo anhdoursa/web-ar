@@ -60,8 +60,8 @@ const Scene = () => {
         <boxGeometry />
         <meshNormalMaterial />
       </mesh>
-      <mesh ref={reticle} visible={false} matrixAutoUpdate={false}>
-        <ringGeometry args={[0.15, 0.2, 32]} rotateX={-Math.PI / 2} />
+      <mesh ref={reticle} visible={false} matrixAutoUpdate={false} rotateX={-Math.PI / 2}>
+        <ringGeometry args={[0.15, 0.2, 32]} />
         <meshBasicMaterial />
       </mesh>
     </Interactive>
