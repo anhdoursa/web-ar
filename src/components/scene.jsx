@@ -65,11 +65,14 @@ const Scene = () => {
   }, [hitTest]);
 
   const onSelect = () => {
-    setText('select');
+    object3D.current.material.color = 'yellow';
+  };
+  const onSqueeze = () => {
+    object3D.current.material.color = 'green';
   };
 
   return (
-    <Interactive onSelect={onSelect}>
+    <Interactive onSelect={onSelect} onSqueeze={onSqueeze}>
       <mesh ref={object3D} visible={false}>
         <boxGeometry />
         <meshBasicMaterial color="red" />

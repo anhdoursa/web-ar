@@ -5,7 +5,7 @@ import { ARButton, Controllers, XR } from '@react-three/xr';
 export default function Home() {
   return (
     <>
-      <ARButton sessionInit={{ requiredFeatures: ['hit-test'] }} />
+      <ARButton />
       <p>Text</p>
       <Canvas
         camera={{
