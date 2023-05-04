@@ -74,7 +74,7 @@ const Scene = ({ setText }) => {
     >
       <mesh ref={object3D} visible={false}>
         <boxGeometry args={[0.5, 0.5, 0.5]} />
-        <meshBasicMaterial color={color} />
+        <meshBasicMaterial color="red" />
       </mesh>
     </Interactive>
   );
