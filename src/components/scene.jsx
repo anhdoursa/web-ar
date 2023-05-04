@@ -72,7 +72,7 @@ const Scene = ({ setText }) => {
       onSelectEnd={() => setText('onSelectEnd')}
       // onSqueeze={() => setText('onSqueeze')}
     >
-      <mesh ref={object3D} visible={false}>
+      <mesh ref={object3D} visible={false} onTouchStart={() => setText('onTouchStart')}>
         <boxGeometry args={[0.5, 0.5, 0.5]} />
         <meshBasicMaterial color="red" />
       </mesh>
