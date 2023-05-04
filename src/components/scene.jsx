@@ -14,6 +14,8 @@ const Scene = () => {
   const object3D = useRef();
   const { scene } = useThree();
 
+  const [color, setColor] = useState('red');
+
   useMemo(() => {
     reticle = new THREE.Mesh(
       new THREE.RingGeometry(0.15, 0.2, 32).rotateX(-Math.PI / 2),
@@ -64,18 +66,23 @@ const Scene = () => {
     }
   }, [hitTest]);
 
-  const onSelect = () => {
-    object3D.current.material.color = 'yellow';
+  const onSelectStart = () => {
+    setColor('yellow');
   };
+
+  const onSelectEnd = () => {
+    setColor('red');
+  };
+
   const onSqueeze = () => {
-    object3D.current.material.color = 'green';
+    setColor('green');
   };
 
   return (
-    <Interactive onSelect={onSelect} onSqueeze={onSqueeze}>
+    <Interactive onSelectStart={onSelectStart} onSelectEnd={onSelectEnd} onSqueeze={onSqueeze}>
       <mesh ref={object3D} visible={false}>
-        <boxGeometry />
-        <meshBasicMaterial color="red" />
+        <boxGeometry args={[0.5, 0.5, 0.5]} />
+        <meshBasicMaterial color={color} />
       </mesh>
     </Interactive>
   );

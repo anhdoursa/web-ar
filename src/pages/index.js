@@ -19,6 +19,7 @@ export default function Home() {
           <Scene />
           <Controllers />
         </XR>
+        <ambientLight />
       </Canvas>
     </>
   );
