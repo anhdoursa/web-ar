@@ -69,10 +69,10 @@ const Scene = ({ setText }) => {
       // onHover={() => setText('onHover')}
       // onBlur={() => setText('onHover')}
       onSelect={() => setText('onSelect')}
-      onSelectEnd={() => setText('onSelectEnd')}
+      // onSelectEnd={() => setText('onSelectEnd')}
       // onSqueeze={() => setText('onSqueeze')}
     >
-      <mesh ref={object3D} visible={false} onTouchStart={() => setText('onTouchStart')}>
+      <mesh ref={object3D} visible={false}>
         <boxGeometry args={[0.5, 0.5, 0.5]} />
         <meshBasicMaterial color="red" />
       </mesh>
