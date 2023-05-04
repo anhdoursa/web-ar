@@ -1,20 +1,57 @@
-import { Interactive, useHitTest } from '@react-three/xr';
+import { useFrame } from '@react-three/fiber';
+import { Interactive } from '@react-three/xr';
 import React, { useRef } from 'react';
 
 const Scene = () => {
+  let hitTestSource = null;
+  let hitTestSourceRequested = false;
   const mesh = useRef();
   const reticle = useRef();
-  useHitTest((hitMatrix, hit) => {
-    if (hit) {
-      reticle.current.visible = true;
-    } else {
-      reticle.current.visible = false;
-    }
-    // use hitMatrix to position any object on the real life surface
-    hitMatrix.decompose(reticle.current.position, reticle.current.quaternion, reticle.current.scale);
 
-    // console.log(hit);
+  useFrame((state, delta, xrFrame) => {
+    if (xrFrame) {
+      const referenceSpace = state.gl.xr.getReferenceSpace();
+      const session = state.gl.xr.getSession();
+
+      if (hitTestSourceRequested === false) {
+        session.requestReferenceSpace('viewer').then(function (referenceSpace) {
+          session.requestHitTestSource({ space: referenceSpace }).then(function (source) {
+            hitTestSource = source;
+          });
+        });
+
+        session.addEventListener('end', function () {
+          hitTestSourceRequested = false;
+          hitTestSource = null;
+        });
+
+        hitTestSourceRequested = true;
+      }
+
+      if (hitTestSource) {
+        const hitTestResults = xrFrame.getHitTestResults(hitTestSource);
+        console.log(hitTestResults);
+        if (hitTestResults.length) {
+          const hit = hitTestResults[0];
+          reticle.current.visible = true;
+          reticle.current.matrix.fromArray(hit.getPose(referenceSpace).transform.matrix);
+        } else {
+          reticle.current.visible = false;
+        }
+      }
+    }
   });
+  // useHitTest((hitMatrix, hit) => {
+  //   if (hit) {
+  //     reticle.current.visible = true;
+  //   } else {
+  //     reticle.current.visible = false;
+  //   }
+  //   // use hitMatrix to position any object on the real life surface
+  //   hitMatrix.decompose(reticle.current.position, reticle.current.quaternion, reticle.current.scale);
+
+  //   // console.log(hit);
+  // });
 
   return (
     <Interactive>
